@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="600.0" prefWidth="400.0" style="-fx-background-color:rgb(127,127,127);" xmlns:fx="http://javafx.com/fxml" fx:controller="com.ghh.game.GamePanelController">
+  <!-- TODO Add Nodes -->
+</AnchorPane>
