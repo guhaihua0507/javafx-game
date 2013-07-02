@@ -18,7 +18,7 @@ public class MainWindow extends Application {
 	private final int		WIDTH	= 400;
 	private final int		HEIGHT	= 600;
 	private AnchorPane		root;
-	private Timeline		timer;
+	private Timeline		timeline;
 
 	private Bomb			bomb;
 	private List<Zombie>	zombies	= new ArrayList<Zombie>();
@@ -40,8 +40,8 @@ public class MainWindow extends Application {
 		}
 		bomb = createBomb();
 		root.getChildren().add(bomb);
-		timer = new Timeline();
-		timer.setCycleCount(Timeline.INDEFINITE);
+		timeline = new Timeline();
+		timeline.setCycleCount(Timeline.INDEFINITE);
 		KeyFrame kf = new KeyFrame(Duration.millis(20), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent ae) {
@@ -53,8 +53,8 @@ public class MainWindow extends Application {
 				}
 			}
 		});
-		timer.getKeyFrames().add(kf);
-		timer.play();
+		timeline.getKeyFrames().add(kf);
+		timeline.play();
 	}
 
 	private void zombieMove() {
