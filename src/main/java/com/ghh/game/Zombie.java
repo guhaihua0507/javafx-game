@@ -9,7 +9,7 @@ public class Zombie extends Parent {
 	private final int	height	= 90;
 	private ImageView	imageView;
 
-	private double		speedy	= 2.0f;
+	private double		speedy	= 1.0f;
 
 	public Zombie() {
 		imageView = new ImageView();

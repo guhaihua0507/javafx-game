@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -52,16 +53,32 @@ public class MainWindow extends Application {
 			public void handle(ActionEvent ae) {
 				zombieMove();
 				if (!shoot(bomb)) {
-					root.getChildren().remove(bomb);
-					bomb = newBomb();
-					root.getChildren().add(bomb);
+					addBomb();
 				}
+				hitZombie();
 			}
 		});
 		timeline.getKeyFrames().add(kf);
 		timeline.play();
 	}
 
+	private void hitZombie() {
+		for (int col = 0; col < COLUMNS; col++) {
+			List<Zombie> column = zombies.get(col);
+			if (column.isEmpty()) {
+				continue;
+			}
+			Zombie first = column.get(0);
+			Rectangle2D r1 = new Rectangle2D(first.getTranslateX(), first.getTranslateY(), first.getWidth(), first.getHeight());
+			Rectangle2D r2 = new Rectangle2D(bomb.getTranslateX(), bomb.getTranslateY(), bomb.getWidth(), bomb.getHeight());
+			if (r1.intersects(r2)) {
+				column.remove(first);
+				root.getChildren().remove(first);
+				addBomb();
+			}
+		}
+	}
+	
 	private void zombieMove() {
 		for (int col = 0; col < COLUMNS; col++) {
 			List<Zombie> column = zombies.get(col);
@@ -116,6 +133,14 @@ public class MainWindow extends Application {
 		column.add(z);
 	}
 
+	private void addBomb() {
+		if (bomb != null) {
+			root.getChildren().remove(bomb);
+		}
+		bomb = newBomb();
+		root.getChildren().add(bomb);
+	}
+	
 	private Bomb newBomb() {
 		Bomb bomb = new Bomb();
 		bomb.setTranslateX((WIDTH - bomb.getWidth()) / 2);
