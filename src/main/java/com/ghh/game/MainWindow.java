@@ -15,13 +15,15 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainWindow extends Application {
-	private final int		WIDTH	= 400;
-	private final int		HEIGHT	= 600;
-	private AnchorPane		root;
-	private Timeline		timeline;
+	private final int			WIDTH	= 400;
+	private final int			HEIGHT	= 600;
+	private final int			COLUMNS	= 4;
 
-	private Bomb			bomb;
-	private List<Zombie>	zombies	= new ArrayList<Zombie>();
+	private AnchorPane			root;
+	private Timeline			timeline;
+
+	private Bomb				bomb;
+	private List<List<Zombie>>	zombies;
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -32,23 +34,26 @@ public class MainWindow extends Application {
 		stage.show();
 	}
 
-	private void play() {
-		for (int i = 0; i < 3; i++) {
-			Zombie z = createZombie(i);
-			zombies.add(z);
-			root.getChildren().add(z);
+	private void initGameContext() {
+		zombies = new ArrayList<List<Zombie>>(COLUMNS);
+		for (int i = 0; i < COLUMNS; i++) {
+			zombies.add(new ArrayList<Zombie>());
 		}
-		bomb = createBomb();
+	}
+
+	private void play() {
+		initGameContext();
+		bomb = newBomb();
 		root.getChildren().add(bomb);
 		timeline = new Timeline();
 		timeline.setCycleCount(Timeline.INDEFINITE);
-		KeyFrame kf = new KeyFrame(Duration.millis(20), new EventHandler<ActionEvent>() {
+		KeyFrame kf = new KeyFrame(Duration.millis(35), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent ae) {
 				zombieMove();
 				if (!shoot(bomb)) {
 					root.getChildren().remove(bomb);
-					bomb = createBomb();
+					bomb = newBomb();
 					root.getChildren().add(bomb);
 				}
 			}
@@ -58,18 +63,35 @@ public class MainWindow extends Application {
 	}
 
 	private void zombieMove() {
-		for (int i = 2; i >= 0; i--) {
-			Zombie z = zombies.get(i);
-			if (z.getTranslateY() > HEIGHT) {
-				root.getChildren().remove(z);
-				int col = zombies.indexOf(z);
-				zombies.remove(i);
-				Zombie newZomb = createZombie(col);
-				root.getChildren().add(newZomb);
-				zombies.add(col, newZomb);
-				continue;
+		for (int col = 0; col < COLUMNS; col++) {
+			List<Zombie> column = zombies.get(col);
+			if (column.isEmpty()) {
+				addZombie(col, column);
 			}
-			z.setTranslateY(z.getSpeedy() + z.getTranslateY());
+			List<Zombie> _toRemove = new ArrayList<Zombie>();
+			boolean addNew = false;
+			for (int i = 0; i < column.size(); i++) {
+				Zombie z = column.get(i);
+				if (z.getTranslateY() > HEIGHT - 100) {
+					_toRemove.add(z);
+				}
+				if (i == column.size() - 1) {
+					if (z.getTranslateY() > 0) {
+						addNew = true;
+					}
+				}
+				z.setTranslateY(z.getSpeedy() + z.getTranslateY());
+			}
+			/*
+			 * remove zombies
+			 */
+			{
+				column.removeAll(_toRemove);
+				root.getChildren().removeAll(_toRemove);
+			}
+			if (addNew) {
+				addZombie(col, column);
+			}
 		}
 	}
 
@@ -88,7 +110,13 @@ public class MainWindow extends Application {
 		}
 	}
 
-	private Bomb createBomb() {
+	private void addZombie(int index, List<Zombie> column) {
+		Zombie z = newZombie(index);
+		root.getChildren().add(z);
+		column.add(z);
+	}
+
+	private Bomb newBomb() {
 		Bomb bomb = new Bomb();
 		bomb.setTranslateX((WIDTH - bomb.getWidth()) / 2);
 		bomb.setTranslateY(HEIGHT - bomb.getHeight());
@@ -97,12 +125,12 @@ public class MainWindow extends Application {
 		return bomb;
 	}
 
-	private Zombie createZombie(int col) {
+	private Zombie newZombie(int col) {
 		Zombie z = new Zombie();
-		int _col_width = (int) (WIDTH / 3);
+		int _col_width = (int) (WIDTH / COLUMNS);
 		int x = _col_width * col + (_col_width - z.getWidth()) / 2;
 		z.setTranslateX(x);
-		z.setTranslateY(0);
+		z.setTranslateY(z.getHeight() * -1);
 		return z;
 	}
 
