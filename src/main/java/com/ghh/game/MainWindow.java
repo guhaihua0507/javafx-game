@@ -18,7 +18,7 @@ import javafx.util.Duration;
 public class MainWindow extends Application {
 	private final int			WIDTH	= 400;
 	private final int			HEIGHT	= 600;
-	private final int			COLUMNS	= 4;
+	private final int			COLUMNS	= 8;
 
 	private AnchorPane			root;
 	private Timeline			timeline;
@@ -69,8 +69,10 @@ public class MainWindow extends Application {
 				continue;
 			}
 			Zombie first = column.get(0);
-			Rectangle2D r1 = new Rectangle2D(first.getTranslateX(), first.getTranslateY(), first.getWidth(), first.getHeight());
-			Rectangle2D r2 = new Rectangle2D(bomb.getTranslateX(), bomb.getTranslateY(), bomb.getWidth(), bomb.getHeight());
+			Rectangle2D r1 = new Rectangle2D(first.getTranslateX(), first.getTranslateY(), first.getWidth(),
+					first.getHeight());
+			Rectangle2D r2 = new Rectangle2D(bomb.getTranslateX(), bomb.getTranslateY(), bomb.getWidth(),
+					bomb.getHeight());
 			if (r1.intersects(r2)) {
 				column.remove(first);
 				root.getChildren().remove(first);
@@ -78,7 +80,7 @@ public class MainWindow extends Application {
 			}
 		}
 	}
-	
+
 	private void zombieMove() {
 		for (int col = 0; col < COLUMNS; col++) {
 			List<Zombie> column = zombies.get(col);
@@ -98,6 +100,7 @@ public class MainWindow extends Application {
 					}
 				}
 				z.setTranslateY(z.getSpeedy() + z.getTranslateY());
+				z.updateView();
 			}
 			/*
 			 * remove zombies
@@ -140,7 +143,7 @@ public class MainWindow extends Application {
 		bomb = newBomb();
 		root.getChildren().add(bomb);
 	}
-	
+
 	private Bomb newBomb() {
 		Bomb bomb = new Bomb();
 		bomb.setTranslateX((WIDTH - bomb.getWidth()) / 2);
