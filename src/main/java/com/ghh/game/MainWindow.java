@@ -119,13 +119,12 @@ public class MainWindow extends Application {
 		if (b == null) {
 			return false;
 		}
-		double x = b.getSpeedx() + b.getTranslateX();
-		double y = b.getSpeedy() + b.getTranslateY();
+		b.update();
+		double x = b.getTranslateX();
+		double y = b.getTranslateY();
 		if (x < 0 - b.getWidth() || x > root.getPrefWidth() || y < 0 - b.getHeight() || y > root.getPrefHeight()) {
 			return false;
 		} else {
-			b.setTranslateX(x);
-			b.setTranslateY(y);
 			return true;
 		}
 	}
@@ -148,8 +147,8 @@ public class MainWindow extends Application {
 		Bomb bomb = new Bomb();
 		bomb.setTranslateX((WIDTH - bomb.getWidth()) / 2);
 		bomb.setTranslateY(HEIGHT - bomb.getHeight());
-		bomb.setSpeedx((Math.random() - 0.5f) * 6 + 1);
-		bomb.setSpeedy((Math.random() * 3 + 1) * -1);
+//		bomb.setSpeedx((Math.random() - 0.5f) * 6 + 1);
+//		bomb.setSpeedy((Math.random() * 3 + 1) * -1);
 		return bomb;
 	}
 
