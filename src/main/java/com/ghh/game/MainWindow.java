@@ -34,8 +34,8 @@ public class MainWindow extends Application {
 		root = FXMLLoader.load(getClass().getResource("GamePanel.fxml"));
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
-		play();
 		stage.show();
+		play();
 	}
 
 	private void initGameContext() {
