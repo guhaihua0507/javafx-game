@@ -1,111 +1,37 @@
 package com.ghh.game;
 
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
-import javafx.scene.Parent;
+import javafx.animation.ScaleTransitionBuilder;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.util.Duration;
 
-public class Bomb extends Parent {
-	private final int	width		= 76;
-	private final int	height		= 76;
-
-	private double		speedx		= 0.0f;
-	private double		speedy		= 0.0f;
-
+public class Bomb extends Weapon {
 	private ImageView	imageView;
 
-	private double		startX;
-	private double		startY;
-	private boolean		dragged		= false;
-	private boolean		dragging	= false;
-	private boolean		moving		= false;
-	private Point2D		dragAnchor;
-	private long		startTime;
-	private long		updateTime;
-
 	public Bomb() {
+		super(100, 72, 72);
 		imageView = new ImageView();
-		imageView.setImage(new Image(Bomb.class.getResourceAsStream("/Bomb-Cool-icon.png")));
+		imageView.setImage(new Image(Bomb.class.getResourceAsStream("/bomb.png")));
+		imageView.setFitHeight(height);
+		imageView.setFitWidth(width);
 		getChildren().add(imageView);
-		initEvent();
+		super.initEvent();
 	}
 
-	private void initEvent() {
-		setOnMousePressed(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent me) {
-				if (dragged || moving) {
-					return;
-				}
-				// when mouse is pressed, store initial position
-				startX = Bomb.this.getTranslateX();
-				startY = Bomb.this.getTranslateY();
-				dragAnchor = new Point2D(me.getSceneX(), me.getSceneY());
-				startTime = System.currentTimeMillis();
-			}
-		});
-
-		setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent me) {
-				if (dragged || moving) {
-					return;
-				}
-				dragging = true;
-				double offsetX = me.getSceneX() - dragAnchor.getX();
-				double offsetY = me.getSceneY() - dragAnchor.getY();
-				Bomb.this.setTranslateX(startX + offsetX);
-				Bomb.this.setTranslateY(startY + offsetY);
-			}
-		});
-
-		setOnMouseReleased(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent arg0) {
-				if (!dragging || dragged || moving) {
-					return;
-				}
-				dragged = true;
-				moving = true;
-				long _time = System.currentTimeMillis() - startTime;
-				double offsetX = Bomb.this.getTranslateX() - startX;
-				double offsetY = Bomb.this.getTranslateY() - startY;
-				speedx = offsetX / _time;
-				speedy = offsetY / _time;
-				updateTime = System.currentTimeMillis();
-			}
-		});
+	@Override
+	protected void fire() {
+		ScaleTransitionBuilder.create()
+			.node(imageView)
+			.duration(Duration.millis(200))
+			.autoReverse(true)
+			.cycleCount(Timeline.INDEFINITE)
+			.toX(0.8f)
+			.toY(0.8f)
+			.build()
+			.play();
 	}
-
-	public void update() {
-		if (!moving) {
-			return;
-		}
-		long deltaTime = (System.currentTimeMillis() - updateTime) / 5;
-		double x = speedx * deltaTime + getTranslateX();
-		double y = speedy * deltaTime + getTranslateY();
-		setTranslateX(x);
-		setTranslateY(y);
-		updateTime = System.currentTimeMillis();
-	}
-
-	public double getSpeedx() {
-		return speedx;
-	}
-
-	public void setSpeedx(double speedx) {
-		this.speedx = speedx;
-	}
-
-	public double getSpeedy() {
-		return speedy;
-	}
-
-	public void setSpeedy(double speedy) {
-		this.speedy = speedy;
-	}
-
+	
 	public int getWidth() {
 		return width;
 	}
@@ -113,4 +39,5 @@ public class Bomb extends Parent {
 	public int getHeight() {
 		return height;
 	}
+
 }

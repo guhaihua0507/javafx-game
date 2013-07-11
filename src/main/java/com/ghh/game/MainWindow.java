@@ -3,6 +3,7 @@ package com.ghh.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -18,13 +19,15 @@ import javafx.util.Duration;
 public class MainWindow extends Application {
 	private final int			WIDTH	= 400;
 	private final int			HEIGHT	= 600;
-	private final int			COLUMNS	= 8;
+	private final int			COLUMNS	= 4;
 
 	private AnchorPane			root;
-	private Timeline			timeline;
 
-	private Bomb				bomb;
+	private Weapon				weapon;
 	private List<List<Zombie>>	zombies;
+	private Timeline			ztl;
+
+	private AnimationTimer		timer;
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -44,22 +47,30 @@ public class MainWindow extends Application {
 
 	private void play() {
 		initGameContext();
-		bomb = newBomb();
-		root.getChildren().add(bomb);
-		timeline = new Timeline();
-		timeline.setCycleCount(Timeline.INDEFINITE);
-		KeyFrame kf = new KeyFrame(Duration.millis(35), new EventHandler<ActionEvent>() {
+
+		ztl = new Timeline();
+		ztl.setCycleCount(Timeline.INDEFINITE);
+		ztl.getKeyFrames().add(new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent ae) {
-				zombieMove();
-				if (!shoot(bomb)) {
-					addBomb();
+				int random = (int) (Math.random() * COLUMNS);
+				addZombie(random);
+			}
+		}));
+		ztl.play();
+
+		timer = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				updateZombies();
+				if (!shoot(weapon, now)) {
+					addWeapon();
 				}
 				hitZombie();
 			}
-		});
-		timeline.getKeyFrames().add(kf);
-		timeline.play();
+		};
+		timer.start();
+		addWeapon();
 	}
 
 	private void hitZombie() {
@@ -68,39 +79,31 @@ public class MainWindow extends Application {
 			if (column.isEmpty()) {
 				continue;
 			}
-			Zombie first = column.get(0);
-			Rectangle2D r1 = new Rectangle2D(first.getTranslateX(), first.getTranslateY(), first.getWidth(),
-					first.getHeight());
-			Rectangle2D r2 = new Rectangle2D(bomb.getTranslateX(), bomb.getTranslateY(), bomb.getWidth(),
-					bomb.getHeight());
+			Zombie z = column.get(0);
+			Rectangle2D r1 = new Rectangle2D(z.getTranslateX(), z.getTranslateY(), z.getWidth(), z.getHeight());
+			Rectangle2D r2 = new Rectangle2D(weapon.getTranslateX(), weapon.getTranslateY(), weapon.getWidth(),
+					weapon.getHeight());
 			if (r1.intersects(r2)) {
-				column.remove(first);
-				root.getChildren().remove(first);
-				addBomb();
+				z.setLife(z.getLife() - weapon.getPower());
+				if (z.getLife() <= 0) {
+					column.remove(z);
+					root.getChildren().remove(z);
+				}
+				addWeapon();
 			}
 		}
 	}
 
-	private void zombieMove() {
+	private void updateZombies() {
 		for (int col = 0; col < COLUMNS; col++) {
 			List<Zombie> column = zombies.get(col);
-			if (column.isEmpty()) {
-				addZombie(col, column);
-			}
 			List<Zombie> _toRemove = new ArrayList<Zombie>();
-			boolean addNew = false;
 			for (int i = 0; i < column.size(); i++) {
 				Zombie z = column.get(i);
 				if (z.getTranslateY() > HEIGHT - 100) {
 					_toRemove.add(z);
 				}
-				if (i == column.size() - 1) {
-					if (z.getTranslateY() > 0) {
-						addNew = true;
-					}
-				}
 				z.setTranslateY(z.getSpeedy() + z.getTranslateY());
-				z.updateView();
 			}
 			/*
 			 * remove zombies
@@ -109,17 +112,14 @@ public class MainWindow extends Application {
 				column.removeAll(_toRemove);
 				root.getChildren().removeAll(_toRemove);
 			}
-			if (addNew) {
-				addZombie(col, column);
-			}
 		}
 	}
 
-	private boolean shoot(Bomb b) {
+	private boolean shoot(Weapon b, long l) {
 		if (b == null) {
 			return false;
 		}
-		b.update();
+		b.update(l);
 		double x = b.getTranslateX();
 		double y = b.getTranslateY();
 		if (x < 0 - b.getWidth() || x > root.getPrefWidth() || y < 0 - b.getHeight() || y > root.getPrefHeight()) {
@@ -129,36 +129,50 @@ public class MainWindow extends Application {
 		}
 	}
 
-	private void addZombie(int index, List<Zombie> column) {
-		Zombie z = newZombie(index);
-		root.getChildren().add(z);
-		column.add(z);
-	}
-
-	private void addBomb() {
-		if (bomb != null) {
-			root.getChildren().remove(bomb);
-		}
-		bomb = newBomb();
-		root.getChildren().add(bomb);
-	}
-
-	private Bomb newBomb() {
-		Bomb bomb = new Bomb();
-		bomb.setTranslateX((WIDTH - bomb.getWidth()) / 2);
-		bomb.setTranslateY(HEIGHT - bomb.getHeight());
-//		bomb.setSpeedx((Math.random() - 0.5f) * 6 + 1);
-//		bomb.setSpeedy((Math.random() * 3 + 1) * -1);
-		return bomb;
-	}
-
-	private Zombie newZombie(int col) {
+	private void addZombie(int index) {
+		List<Zombie> list = zombies.get(index);
 		Zombie z = new Zombie();
 		int _col_width = (int) (WIDTH / COLUMNS);
-		int x = _col_width * col + (_col_width - z.getWidth()) / 2;
+		double x = _col_width * index + (_col_width - z.getWidth()) / 2;
+		double y = z.getHeight() * -1;
+		if (!list.isEmpty()) {
+			Zombie last = list.get(list.size() - 1);
+			y = last.getTranslateY() - z.getHeight() - 10;
+		}
 		z.setTranslateX(x);
-		z.setTranslateY(z.getHeight() * -1);
-		return z;
+		z.setTranslateY(y);
+
+		root.getChildren().add(z);
+		list.add(z);
+	}
+
+	private void addWeapon() {
+		if (weapon != null) {
+			root.getChildren().remove(weapon);
+		}
+		weapon = newWeapon();
+		weapon.setTranslateX((WIDTH - weapon.getWidth()) / 2);
+		weapon.setTranslateY(HEIGHT - weapon.getHeight());
+		root.getChildren().add(weapon);
+	}
+
+	private Weapon newWeapon() {
+		Weapon weapon;
+		int random = (int) (Math.random() * 3);
+		switch (random) {
+		case 0:
+			weapon = new Shuriken();
+			break;
+		case 1:
+			weapon = new Bomb();
+			break;
+		case 2:
+			weapon = new Hammer();
+			break;
+		default:
+			weapon = new Shuriken();
+		}
+		return weapon;
 	}
 
 	public static void main(String[] args) {
