@@ -1,4 +1,6 @@
-package com.ghh.game;
+package com.ghh.game.wp;
+
+import com.ghh.game.Weapon;
 
 import javafx.animation.ScaleTransitionBuilder;
 import javafx.animation.Timeline;

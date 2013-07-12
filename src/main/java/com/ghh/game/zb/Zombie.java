@@ -1,4 +1,6 @@
-package com.ghh.game;
+package com.ghh.game.zb;
+
+import com.ghh.game.wp.Bomb;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

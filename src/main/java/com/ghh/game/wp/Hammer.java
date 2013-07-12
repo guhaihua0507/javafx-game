@@ -1,4 +1,6 @@
-package com.ghh.game;
+package com.ghh.game.wp;
+
+import com.ghh.game.Weapon;
 
 import javafx.animation.RotateTransitionBuilder;
 import javafx.animation.Timeline;
@@ -6,16 +8,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
-public class Shuriken extends Weapon {
+public class Hammer extends Weapon {
 	private ImageView	imageView;
 	
-	public Shuriken() {
-		super(30, 32, 32);
+	public Hammer() {
+		super(20, 64, 64);
 		init();
 	}
 
 	private void init() {
-		imageView = new ImageView(new Image(this.getClass().getResourceAsStream("/shuriken.png")));
+		imageView = new ImageView(new Image(this.getClass().getResourceAsStream("/hammer.png")));
 		imageView.setFitWidth(width);
 		imageView.setFitHeight(height);
 		getChildren().add(imageView);
@@ -30,7 +32,9 @@ public class Shuriken extends Weapon {
 			.cycleCount(Timeline.INDEFINITE)
 			.fromAngle(0)
 			.toAngle(360)
-			.duration(Duration.millis(500))
-			.build().play();
+			.duration(Duration.millis(1000))
+			.build()
+			.play();
 	}
+
 }

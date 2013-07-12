@@ -3,6 +3,11 @@ package com.ghh.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ghh.game.wp.Bomb;
+import com.ghh.game.wp.Hammer;
+import com.ghh.game.wp.Shuriken;
+import com.ghh.game.zb.Zombie;
+
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
