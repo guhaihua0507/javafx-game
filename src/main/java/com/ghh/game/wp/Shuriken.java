@@ -28,11 +28,11 @@ public class Shuriken extends Weapon {
 	protected void fire() {
 		RotateTransitionBuilder.create()
 			.node(imageView)
+			.duration(Duration.seconds(5))
 			.autoReverse(false)
 			.cycleCount(Timeline.INDEFINITE)
 			.fromAngle(0)
-			.toAngle(360)
-			.duration(Duration.millis(500))
+			.toAngle(3600)
 			.build().play();
 	}
 }
