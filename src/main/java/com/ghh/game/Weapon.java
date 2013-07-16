@@ -1,5 +1,6 @@
 package com.ghh.game;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -88,6 +89,8 @@ public abstract class Weapon extends Parent {
 	}
 
 	protected abstract void fire();
+	
+	public abstract void destroy(EventHandler<ActionEvent> eh);
 
 	public void update(long now) {
 		if (status != Status.moving) {

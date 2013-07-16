@@ -10,7 +10,7 @@
 			<artifactId>javafx</artifactId>
 			<version>2.2.3</version>
 			<scope>system</scope>
-			<systemPath>D:\Program Files\Java\jdk1.7.0_25\jre\lib\jfxrt.jar</systemPath>
+			<systemPath>C:\Program Files\Java\jdk1.7.0_25\jre\lib\jfxrt.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>
