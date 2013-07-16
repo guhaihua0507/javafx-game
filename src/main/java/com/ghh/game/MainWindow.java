@@ -153,7 +153,13 @@ public class MainWindow extends Application {
 
 	private void addWeapon() {
 		if (weapon != null) {
-			root.getChildren().remove(weapon);
+			final Weapon wp = weapon;
+			weapon.destroy(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent ae) {
+					root.getChildren().remove(wp);					
+				}
+			});
 		}
 		weapon = newWeapon();
 		weapon.setTranslateX((WIDTH - weapon.getWidth()) / 2);
